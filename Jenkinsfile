@@ -42,6 +42,8 @@ pipeline {
         stage('Acceptance Test') {
             steps {
                 echo 'Running acceptance tests...'
+                sh "docker stop ${DOCKER_IMAGE} || true"
+                sh "docker rm ${DOCKER_IMAGE} || true"
                 sh "docker run -d -p 8765:8080 --name ${DOCKER_IMAGE} ${DOCKER_IMAGE}"
                 sh 'sleep 5'
                 sh "chmod +x gradlew && ./gradlew acceptanceTest -Dcalculator.url=http://localhost:8765"
