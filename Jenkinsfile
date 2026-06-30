@@ -8,8 +8,6 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'calculator'
         REGISTRY = 'docker.io'
-        DOCKER_USERNAME = credentials('docker-hub-username')
-        FULL_IMAGE_NAME = "${DOCKER_USERNAME}/${DOCKER_IMAGE}"
     }
 
     stages {
@@ -50,22 +48,20 @@ pipeline {
             }
         }
 
-        stage('Docker Build') {
+        stage('Docker Build & Push') {
             steps {
-                echo 'Building Docker image...'
-                sh "docker build -t ${DOCKER_IMAGE} -t ${FULL_IMAGE_NAME}:${BUILD_NUMBER} -t ${FULL_IMAGE_NAME}:latest ."
-            }
-        }
-
-        stage('Docker Push') {
-            steps {
-                echo 'Pushing Docker image...'
+                echo 'Building and pushing Docker image...'
                 withCredentials([usernamePassword(
                     credentialsId: 'docker-hub-credentials',
                     usernameVariable: 'DOCKER_USERNAME',
                     passwordVariable: 'DOCKER_PASSWORD'
                 )]) {
-                    sh "echo \$DOCKER_PASSWORD | docker login -u \$DOCKER_USERNAME --password-stdin && docker push ${FULL_IMAGE_NAME}:${BUILD_NUMBER} && docker push ${FULL_IMAGE_NAME}:latest"
+                    sh """
+                        docker build -t ${DOCKER_IMAGE} -t \$DOCKER_USERNAME/${DOCKER_IMAGE}:${BUILD_NUMBER} -t \$DOCKER_USERNAME/${DOCKER_IMAGE}:latest .
+                        echo \$DOCKER_PASSWORD | docker login -u \$DOCKER_USERNAME --password-stdin
+                        docker push \$DOCKER_USERNAME/${DOCKER_IMAGE}:${BUILD_NUMBER}
+                        docker push \$DOCKER_USERNAME/${DOCKER_IMAGE}:latest
+                    """
                 }
             }
         }
