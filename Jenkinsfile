@@ -21,21 +21,21 @@ pipeline {
         stage('Compile') {
             steps {
                 echo 'Compiling Java code...'
-                sh './gradlew compileJava'
+                sh 'chmod +x gradlew && ./gradlew compileJava'
             }
         }
 
         stage('Unit Test') {
             steps {
                 echo 'Running unit tests...'
-                sh './gradlew test'
+                sh 'chmod +x gradlew && ./gradlew test'
             }
         }
 
         stage('Package') {
             steps {
                 echo 'Building JAR package...'
-                sh './gradlew build'
+                sh 'chmod +x gradlew && ./gradlew build'
             }
         }
 
@@ -44,7 +44,7 @@ pipeline {
                 echo 'Running acceptance tests...'
                 sh "docker run -d -p 8765:8080 --name ${DOCKER_IMAGE} ${DOCKER_IMAGE}"
                 sh 'sleep 5'
-                sh "./gradlew acceptanceTest -Dcalculator.url=http://localhost:8765"
+                sh "chmod +x gradlew && ./gradlew acceptanceTest -Dcalculator.url=http://localhost:8765"
             }
         }
 
