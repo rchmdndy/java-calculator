@@ -1,0 +1,36 @@
+plugins {
+    id 'org.springframework.boot' version '2.7.18'
+    id 'java'
+}
+
+group = 'com.leszko'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '11'
+    targetCompatibility = '11'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web:2.7.18'
+    implementation 'org.springframework.boot:spring-boot-starter-test:2.7.18'
+    testImplementation 'io.cucumber:cucumber-java:7.14.0'
+    testImplementation 'io.cucumber:cucumber-junit:7.14.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+test {
+    useJUnitPlatform()
+    exclude '**/acceptance/**'
+}
+
+tasks.register('acceptanceTest', Test) {
+    include '**/acceptance/**'
+    useJUnitPlatform()
+    systemProperties = System.getProperties()
+}
