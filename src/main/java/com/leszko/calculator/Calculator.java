@@ -1,6 +1,7 @@
 package com.leszko.calculator;
 
 import org.springframework.stereotype.Service;
+// testing
 
 @Service
 public class Calculator {
